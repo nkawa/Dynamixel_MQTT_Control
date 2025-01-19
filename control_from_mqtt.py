@@ -29,7 +29,9 @@ def list_com_ports():
 
     return ""
 
-com_port = list_com_ports()
+#com_port = list_com_ports()
+com_port="COM9"
+
 
 
 port_handler = PortHandler(com_port)
@@ -75,16 +77,17 @@ class DX_MQTT:
             print("Unexpected disconnection.")
             
     def on_message(self,client, userdata, msg):
-        print("Message",msg.payload)
+#        print("Message",msg.payload)
         json_data = json.loads(msg.payload)
         pos_list = json_data["rotate"]
-        print(json_data,pos_list)
+#        print(json_data,pos_list)
             
         for did in DXL_IDS:
             dxl_comm_result, dxl_error = packet_handler.write4ByteTxRx(port_handler, did, ADDR_GOAL_POSITION, pos_list[did-11])
             if dxl_comm_result != COMM_SUCCESS:
                 print("Error on control")
                 quit()
+        time.sleep(0.01)
         
     
     def connect_mqtt(self):

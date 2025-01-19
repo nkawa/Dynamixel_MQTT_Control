@@ -30,6 +30,8 @@ def list_com_ports():
     return ""
 
 com_port = list_com_ports()
+com_port="COM10"
+ADDR_TORQUE_ENABLE = 64  # トルク有効化
 
 
 port_handler = PortHandler(com_port)
@@ -44,7 +46,23 @@ else:
     quit()
     
 DXL_IDS = [11,12,13,14,15]
-DXL_IDS = [11,12,13,14,15]
+
+
+def set_position_and_torque():
+    for did in DXL_IDS:
+#        dxl_comm_result, dxl_error = packet_handler.write1ByteTxRx(port_handler, did, ADDR_OPERATING_MODE, )
+#        if dxl_comm_result != COMM_SUCCESS:
+#            print(f"動作モードの設定に失敗しました: {packet_handler.getTxRxResult(dxl_comm_result)}")
+#            quit()
+        # トルクを有効化
+#        print("Set torque 0",did)
+        dxl_comm_result, dxl_error = packet_handler.write1ByteTxRx(port_handler, did, ADDR_TORQUE_ENABLE, 0)
+        if dxl_comm_result != COMM_SUCCESS:
+            print(f"トルク有効化に失敗しました: {packet_handler.getTxRxResult(dxl_comm_result)}")
+            quit()
+
+set_position_and_torque()
+        
 
 def ping_id(DXL_ID):   
     dxl_model_number, dxl_comm_result, dxl_error = packet_handler.ping(port_handler, DXL_ID)
