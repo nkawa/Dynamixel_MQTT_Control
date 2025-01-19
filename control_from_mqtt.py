@@ -75,9 +75,9 @@ class DX_MQTT:
             print("Unexpected disconnection.")
             
     def on_message(self,client, userdata, msg):
-        #print("Message",msg.payload)
-        json_data = json.loads(msg)
-        pos_list = json_data["real"]
+        print("Message",msg.payload)
+        json_data = json.loads(msg.payload)
+        pos_list = json_data["rotate"]
         print(json_data,pos_list)
             
         for did in DXL_IDS:
