@@ -24,15 +24,22 @@ def list_com_ports():
 #            "description": port.description,  # デバイスの説明
 #            "hwid": port.hwid                 # ハードウェアID
 #        })
+        print("Chcking port:",port.device)
         if "0403:6014" in port.hwid: ## FTDI device VID:PID  0403:6014
-            return port.device
+            flag = True
+            try:
+                with serial.Serial(port.device) as ser:
+                    pass
+            except serial.SerialException as e:
+                print("Port:",port.device," is used.")
+                flag = False
+            
+            if flag:
+                return port.device
 
     return ""
 
-#com_port = list_com_ports()
-com_port="COM9"
-
-
+com_port = list_com_ports()
 
 port_handler = PortHandler(com_port)
 packet_handler = PacketHandler(2.0)

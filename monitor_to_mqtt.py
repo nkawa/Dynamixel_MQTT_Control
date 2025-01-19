@@ -24,13 +24,17 @@ def list_com_ports():
 #            "description": port.description,  # デバイスの説明
 #            "hwid": port.hwid                 # ハードウェアID
 #        })
+        print("Chcking port:",port.device)
         if "0403:6014" in port.hwid: ## FTDI device VID:PID  0403:6014
             return port.device
 
     return ""
 
-com_port = list_com_ports()
+com_port = list_com_ports() # 
+
+
 com_port="COM10"
+
 ADDR_TORQUE_ENABLE = 64  # トルク有効化
 
 
