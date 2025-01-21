@@ -40,7 +40,6 @@ def list_com_ports():
 
 com_port = list_com_ports() #  今使えるポートを返すはず
 
-#com_port="COM10"
 
 ADDR_TORQUE_ENABLE = 64  # トルク有効化
 
