@@ -77,24 +77,25 @@ class DX_MQTT:
         
     def on_connect(self, client, userdata,flag, rc):
         print("Connected with result code " + str(rc))  # 接続できた旨表示
-        self.client.subscribe("om/real") #　connected -> subscribe
+        self.client.subscribe("om/vrgoogle") #　connected -> subscribe
     
     def on_disconnect(self, client, userdata, rc):
         if  rc != 0:
             print("Unexpected disconnection.")
             
     def on_message(self,client, userdata, msg):
-#        print("Message",msg.payload)
         json_data = json.loads(msg.payload)
         pos_list = json_data["rotate"]
-#        print(json_data,pos_list)
+        ctime = datetime.now().strftime("%Y/%m/%d %H:%M:%S.%f")
+        print("Message",ctime, msg.payload)
+#        print(ctime, pos_list)
             
         for did in DXL_IDS:
             dxl_comm_result, dxl_error = packet_handler.write4ByteTxRx(port_handler, did, ADDR_GOAL_POSITION, pos_list[did-11])
             if dxl_comm_result != COMM_SUCCESS:
                 print("Error on control")
                 quit()
-        time.sleep(0.01)
+#        time.sleep(0.01)
         
     
     def connect_mqtt(self):
@@ -103,7 +104,7 @@ class DX_MQTT:
         self.client.on_connect = self.on_connect         # 接続時のコールバック関数を登録
         self.client.on_disconnect = self.on_disconnect   # 切断時のコールバックを登録
         self.client.on_message = self.on_message         # メッセージ到着時のコールバック
-        self.client.connect("192.168.207.22", 1883, 60)
+        self.client.connect("sora2.uclab.jp", 1883, 60)
 #        self.client.loop_start()   # 通信処理開始
         self.client.loop_forever()   # 通信処理開始
             
@@ -148,7 +149,7 @@ def set_position_and_torque():
         if dxl_comm_result != COMM_SUCCESS:
             print(f"モード変更に失敗しました: {packet_handler.getTxRxResult(dxl_comm_result)}")
             quit()
-        dxl_comm_result, dxl_error = packet_handler.write2ByteTxRx(port_handler, did, ADDR_POSITION_P_GAIN, 100)
+        dxl_comm_result, dxl_error = packet_handler.write2ByteTxRx(port_handler, did, ADDR_POSITION_P_GAIN, 80)
         if dxl_comm_result != COMM_SUCCESS:
             print(f"ゲイン変更に失敗しました: {packet_handler.getTxRxResult(dxl_comm_result)}")
             quit()
