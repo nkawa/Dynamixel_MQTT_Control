@@ -11,6 +11,10 @@ import os
 from dynamixel_sdk import COMM_SUCCESS, COMM_RX_TIMEOUT,COMM_TX_FAIL, DXL_HIBYTE,DXL_LOBYTE,DXL_LOWORD,DXL_MAKEWORD,DXL_HIWORD
 from dynamixel_sdk import PortHandler, PacketHandler, GroupSyncRead, GroupSyncWrite
 
+ADDR_PRESENT_CURRENT = 126  # 現在の電流のアドレス (例: XMシリーズの場合)
+LENGTH_PRESENT_CURRENT = 2  # データ長 (2バイト)
+
+
 def list_com_ports():
     # 利用可能なポートを取得
     ports = serial.tools.list_ports.comports()
@@ -69,8 +73,11 @@ def ping_id(DXL_ID):
 #dl, res = packet_handler.broadcastPing(port_handler)
 #print(dl)
 
+
+
 class DX_MQTT:
     def __init__(self):
+        self.pos = [0,0,0,0,1270] # 1270が開いた状態  2634 が閉じた状態
         pass
 #        self.log = open("datalog.txt","w")
 # Sync Write用のインスタンス
@@ -92,8 +99,15 @@ class DX_MQTT:
         ctime = datetime.now().strftime("%Y/%m/%d %H:%M:%S.%f")
         print("Message",ctime, pos_list)
 #        print(ctime, pos_list)
+# もし、goal position の 4 （ツール）が減るときは、モニターを行う仕組みを入れるべき
+        if pos_list[4] > 1270 and pos_list[4]-self.pos[4] > 0:
+            #まずはチェックする。
+            dxl_current, dxl_comm_result, dxl_error = packet_handler.read2ByteTxRx(port_handler, 15, ADDR_PRESENT_CURRENT)
+            if dxl_current > 100:
+                pos_list[4]=self.pos[4] # ぞれ以上変更しない
 
         goal_positions = pos_list
+        self.pos = pos_list
         for dxl_id, goal_position in zip(DXL_IDS, goal_positions):
             param_goal_position = [DXL_LOBYTE(DXL_LOWORD(goal_position)),
                            DXL_HIBYTE(DXL_LOWORD(goal_position)),
