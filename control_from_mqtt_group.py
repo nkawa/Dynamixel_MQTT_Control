@@ -87,7 +87,7 @@ class DX_MQTT:
         
     def on_connect(self, client, userdata,flag, rc):
         print("Connected with result code " + str(rc))  # 接続できた旨表示
-        self.client.subscribe("om/vrgoogle2") #　connected -> subscribe
+        self.client.subscribe("om/vrgoogle") #　connected -> subscribe
     
     def on_disconnect(self, client, userdata, rc):
         if  rc != 0:
@@ -103,7 +103,8 @@ class DX_MQTT:
         if pos_list[4] > 1270 and pos_list[4]-self.pos[4] > 0:
             #まずはチェックする。
             dxl_current, dxl_comm_result, dxl_error = packet_handler.read2ByteTxRx(port_handler, 15, ADDR_PRESENT_CURRENT)
-            if dxl_current > 100:
+            if dxl_current > 150:
+                print("Over Current:",dxl_current, pos_list[4], self.pos[4])
                 pos_list[4]=self.pos[4] # ぞれ以上変更しない
 
         goal_positions = pos_list
